@@ -2,12 +2,14 @@
  * File:  Prescription.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * 
+ * @author Chengcheng Xiong, Group 8
+ * @date modified 2025-07-14
  */
 package acmemedical.entity;
 
 import java.io.Serializable;
-import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
@@ -23,10 +25,10 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
-@SuppressWarnings("unused")
 /**
  * The persistent class for the prescription database table.
  */
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "prescription")
 @Access(AccessType.FIELD)
@@ -34,28 +36,30 @@ import jakarta.persistence.Table;
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// Hint - What annotation is used for a composite primary key type?
 	@EmbeddedId
 	private PrescriptionPK id;
 
-	// @MapsId is used to map a part of composite key to an entity.
 	@MapsId("physicianId")
-    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
 	private Physician physician;
 
-	//TODO PR01 - Add missing annotations.  Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
+	// TODO PR01 - Add missing annotations.
+	@MapsId("patientId")
+	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
 	private Patient patient;
 
-	//TODO PR02 - Add missing annotations.  What should be the cascade and fetch types?
+	// TODO PR02 - Add missing annotations.
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "medicine_id", referencedColumnName = "id")
 	private Medicine medicine;
 
 	@Column(name = "number_of_refills")
 	private int numberOfRefills;
 
-	@Column(length = 100, name = "prescription_information")
+	@Column(name = "prescription_information", length = 100)
 	private String prescriptionInformation;
-
 
 	public Prescription() {
 		id = new PrescriptionPK();
@@ -70,22 +74,28 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	public void setId(PrescriptionPK id) {
 		this.id = id;
 	}
-
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "physician_id")
 	public Physician getPhysician() {
 		return physician;
 	}
 
 	public void setPhysician(Physician physician) {
-		id.setPhysicianId(physician.id);
+		id.setPhysicianId(physician.getId());
 		this.physician = physician;
 	}
-
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_id")
 	public Patient getPatient() {
 		return patient;
 	}
 
 	public void setPatient(Patient patient) {
-		id.setPatientId(patient.id);
+		id.setPatientId(patient.getId());
 		this.patient = patient;
 	}
 
@@ -100,7 +110,7 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	public int getNumberOfRefills() {
 		return numberOfRefills;
 	}
-	
+
 	public void setNumberOfRefills(int numberOfRefills) {
 		this.numberOfRefills = numberOfRefills;
 	}
@@ -113,6 +123,5 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 		this.prescriptionInformation = prescriptionInformation;
 	}
 
-	//Inherited hashCode/equals is sufficient for this entity class
-
+	// Inherited hashCode/equals is sufficient for this entity class
 }

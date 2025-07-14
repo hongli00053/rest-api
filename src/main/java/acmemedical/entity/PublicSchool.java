@@ -3,18 +3,27 @@
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
- * 
+ * @author Chengcheng Xiong, Group 8
+ * @date modified 2025-07-14
  */
 package acmemedical.entity;
 
 import java.io.Serializable;
 
-//TODO PUSC01 - Add missing annotations, please see Week 9 slides page 15.  Value 1 is public and value 0 is private.
-//TODO PUSC02 - Is a JSON annotation needed here?
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+// TODO PUSC01 - Add missing annotations, please see Week 9 slides page 15. Value 1 is public and value 0 is private.
+// TODO PUSC02 - Is a JSON annotation needed here? Yes.
+@Entity
+@DiscriminatorValue("1")
+@JsonTypeName("public_school")
 public class PublicSchool extends MedicalSchool implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public PublicSchool() {
-		super(true);
+		super(true); // true = public
 	}
 }
