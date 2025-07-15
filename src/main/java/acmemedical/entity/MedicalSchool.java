@@ -46,6 +46,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
     @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
 })
+@NamedQuery(name = "MedicalSchool.findAll", query = "SELECT s FROM MedicalSchool s")
+@NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :name")
+@NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :id")
 @NamedQuery(
 	    name = "MedicalSchool.findWithTrainings",
 	    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
@@ -64,6 +67,12 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     // TODO MS07 - Add missing annotation.
     @Column(name = "public")
     private boolean isPublic;
+
+    // NamedQuery constants for JPA queries
+    public static final String ALL_MEDICAL_SCHOOLS_QUERY = "MedicalSchool.findAll";
+    public static final String IS_DUPLICATE_QUERY_NAME = "MedicalSchool.isDuplicate";
+    public static final String SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME = "MedicalSchool.findWithTrainings";
+    public static final String FIND_BY_ID = "MedicalSchool.findById";
 
     public MedicalSchool() {
         super();

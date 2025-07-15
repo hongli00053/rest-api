@@ -2,3 +2,8 @@
 /target
 /target/classes
 .project
+/target
+/target/classes
+/target
+target/classes/acmemedical/entity/MedicalCertificate.class
+*.class

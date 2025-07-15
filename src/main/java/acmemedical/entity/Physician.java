@@ -37,6 +37,8 @@ import jakarta.persistence.Table;
 	    name = "Physician.findWithPrescriptionsAndCertificates",
 	    query = "SELECT p FROM Physician p LEFT JOIN FETCH p.prescriptions LEFT JOIN FETCH p.medicalCertificates WHERE p.id = :id"
 	)
+@NamedQuery(name = "Physician.findAll", query = "SELECT p FROM Physician p")
+@NamedQuery(name = "Physician.findById", query = "SELECT p FROM Physician p WHERE p.id = :id")
 public class Physician extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
