@@ -69,7 +69,7 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     private boolean isPublic;
 
     // NamedQuery constants for JPA queries
-    public static final String ALL_MEDICAL_SCHOOLS_QUERY = "MedicalSchool.findAll";
+    public static final String ALL_MEDICAL_SCHOOLS_QUERY_NAME = "MedicalSchool.findAll";
     public static final String IS_DUPLICATE_QUERY_NAME = "MedicalSchool.isDuplicate";
     public static final String SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME = "MedicalSchool.findWithTrainings";
     public static final String FIND_BY_ID = "MedicalSchool.findById";

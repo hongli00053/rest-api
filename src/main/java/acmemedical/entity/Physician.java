@@ -123,4 +123,5 @@ public class Physician extends PojoBase implements Serializable {
 	}
 
 	// Inherited hashCode/equals is sufficient for this entity class
+	public static final String ALL_PHYSICIANS_QUERY_NAME = "Physician.findAll";
 }
