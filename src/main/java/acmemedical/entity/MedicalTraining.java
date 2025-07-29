@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.NamedQuery;
 
 @SuppressWarnings("unused")
 
@@ -31,6 +32,7 @@ import jakarta.persistence.Embedded;
 @Entity
 @Table(name = "medical_training")
 //TODO MT02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :id")
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -104,4 +106,7 @@ public class MedicalTraining extends PojoBase implements Serializable {
 		}
 		return false;
 	}
+
+    // NamedQuery constant for finding by ID
+    public static final String FIND_BY_ID = "MedicalTraining.findById";
 }

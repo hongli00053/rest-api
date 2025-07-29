@@ -21,6 +21,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 /**
@@ -35,6 +37,8 @@ import jakarta.persistence.Table;
 	    name = "Physician.findWithPrescriptionsAndCertificates",
 	    query = "SELECT p FROM Physician p LEFT JOIN FETCH p.prescriptions LEFT JOIN FETCH p.medicalCertificates WHERE p.id = :id"
 	)
+@NamedQuery(name = "Physician.findAll", query = "SELECT p FROM Physician p")
+@NamedQuery(name = "Physician.findById", query = "SELECT p FROM Physician p WHERE p.id = :id")
 public class Physician extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -59,6 +63,20 @@ public class Physician extends PojoBase implements Serializable {
 	// TODO PH06 - Add annotations for 1:M relation. What should be the cascade and fetch types?
 	@OneToMany(mappedBy = "physician", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
+
+	// One-to-one mapping with SecurityUser. Physician is the inverse side, the foreign key is maintained by SecurityUser.
+	// This allows you to get the associated SecurityUser via physician.getSecurityUser().
+	@OneToOne(mappedBy = "physician", fetch = FetchType.LAZY)
+	@JsonIgnore // Prevent recursive serialization
+	private SecurityUser securityUser;
+
+	public SecurityUser getSecurityUser() {
+		return securityUser;
+	}
+
+	public void setSecurityUser(SecurityUser securityUser) {
+		this.securityUser = securityUser;
+	}
 
 	// TODO PH07 - Is an annotation needed here? No — standard getter.
 	@JsonIgnore
@@ -105,4 +123,5 @@ public class Physician extends PojoBase implements Serializable {
 	}
 
 	// Inherited hashCode/equals is sufficient for this entity class
+	public static final String ALL_PHYSICIANS_QUERY_NAME = "Physician.findAll";
 }

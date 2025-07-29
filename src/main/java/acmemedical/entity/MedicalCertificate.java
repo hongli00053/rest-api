@@ -17,6 +17,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -28,6 +29,8 @@ import jakarta.persistence.Table;
 @Table(name = "medical_certificate")
 //TODO MC02 - Do we need a mapped super class?  If so, which one?
 // Already extends PojoBase
+@NamedQuery(name = "MedicalCertificate.findByPhysicianId", 
+query = "SELECT c FROM MedicalCertificate c WHERE c.owner.id = :physicianId")
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -44,6 +47,9 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	// TODO MC05 - Add annotations.
 	@Column(name = "signed")
 	private byte signed;
+
+	// NamedQuery constant for finding by ID card
+	public static final String ID_CARD_QUERY_NAME = "MedicalCertificate.findByIdCard";
 
 	public MedicalCertificate() {
 		super();

@@ -132,4 +132,14 @@ public class SecurityUser implements Serializable, Principal {
     public String getName() {
         return getUsername();
     }
+    
+    //this needs to be checked if needed.
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "patient_id")
+    protected Patient patient;
+
+    public Patient getPatient() {
+        return this.patient;
+    }
+
 }

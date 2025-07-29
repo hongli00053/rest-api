@@ -69,7 +69,7 @@ public class Patient extends PojoBase implements Serializable {
 
 	// TODO PA10 - Add annotations for 1:M relation. What should be the cascade and fetch types?
 	@JsonIgnore
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Patient() {

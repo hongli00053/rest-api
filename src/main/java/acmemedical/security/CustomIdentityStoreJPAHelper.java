@@ -40,16 +40,14 @@ public class CustomIdentityStoreJPAHelper {
     public SecurityUser findUserByName(String username) {
         LOG.debug("find a SecurityUser by name = {}", username);
         SecurityUser user = null;
-        /* TODO CISJPAH01 - 
-         *  Call the entity manager's createNamedQuery() method to call a named query on SecurityUser
-         *  The named query should be labeled "SecurityUser.userByName" and accepts a parameter called "param1"
-         *  
-         *  Call getSingleResult() inside a try-catch statement (NoResultException)
-         *  
-         *  Note:  Until this method is complete, the Basic Authentication for all HTTP
-         *         requests will fail, none of the REST'ful endpoints will work.
-         *  
-         */
+        // Use the NamedQuery that fetches roles and Physician, parameter name is 'username'
+        try {
+            TypedQuery<SecurityUser> query = em.createNamedQuery("SecurityUser.findWithRolesAndPhysician", SecurityUser.class);
+            query.setParameter("username", username);
+            user = query.getSingleResult();
+        } catch (NoResultException ex) {
+            LOG.debug("No SecurityUser found for username={}", username);
+        }
         return user;
     }
 

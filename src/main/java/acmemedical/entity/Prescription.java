@@ -41,18 +41,18 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 
 	@MapsId("physicianId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "physician_id", nullable = false)
 	private Physician physician;
 
 	// TODO PR01 - Add missing annotations.
 	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
 	// TODO PR02 - Add missing annotations.
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "medicine_id", referencedColumnName = "id")
+	@JoinColumn(name = "medicine_id", nullable = false)
 	private Medicine medicine;
 
 	@Column(name = "number_of_refills")
