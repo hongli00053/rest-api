@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,16 +32,21 @@ import jakarta.persistence.Table;
 //TODO PA02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
 @NamedQueries({
     @NamedQuery(
+        name = "Patient.findAll",
+        query = "SELECT p FROM Patient p"
+    ),
+    @NamedQuery(
         name = "Patient.findById",
-        query = "SELECT p FROM Patient p WHERE p.id = :id"
+        query = "SELECT p FROM Patient p WHERE p.id = :param1"
     ),
     @NamedQuery(
         name = "Patient.findWithPrescriptions",
-        query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :id"
+        query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :param1"
     )
 })
 @Entity
 @Table(name = "patient")
+@AttributeOverride(name = "id", column = @Column(name = "patient_id"))
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -143,7 +143,11 @@ public class ACMEMedicalService implements Serializable {
     public <T> T getById(Class<T> entity, String namedQuery, int id) {
         TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
         allQuery.setParameter(PARAM1, id);
-        return allQuery.getSingleResult();
+        try {
+            return allQuery.getSingleResult();
+        } catch (jakarta.persistence.NoResultException e) {
+            return null;
+        }
     }
 
     @Transactional
