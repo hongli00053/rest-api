@@ -50,7 +50,19 @@ public class PatientResource {
         List<Patient> patients = service.getAll(Patient.class, "Patient.findAll");  // assumes named query exists
         return Response.ok(patients).build();
     }
+    /**Manaf*/
+    @GET
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response getPatientById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        LOG.debug("Retrieving patient with id {}", id);
+        Patient patient = service.getById(Patient.class, "Patient.findById", id);  // assumes named query exists
+        return (patient == null)
+            ? Response.status(Response.Status.NOT_FOUND).build()
+            : Response.ok(patient).build();
+    }
 
+/*
     @GET
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
@@ -73,7 +85,7 @@ public class PatientResource {
            }
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
-    }
+    }*/
 
     @POST
     @RolesAllowed({ADMIN_ROLE})

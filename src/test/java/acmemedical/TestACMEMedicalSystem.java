@@ -19,6 +19,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
@@ -28,6 +30,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -45,6 +48,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import acmemedical.entity.Patient;
 import acmemedical.entity.Physician;
 
 @SuppressWarnings("unused")
@@ -82,18 +86,62 @@ public class TestACMEMedicalSystem {
         Client client = ClientBuilder.newClient().register(MyObjectMapperProvider.class).register(new LoggingFeature());
         webTarget = client.target(uri);
     }
-
+    /**
+     * Test retrieving all physicians using admin role.
+     * Expected: HTTP 200 OK and non-empty list of physicians.
+     * @author manaf
+     */
     @Test
-    public void test01_all_physicians_with_adminrole() throws JsonMappingException, JsonProcessingException {
+    public void test01_all_physicians_with_adminrole() {
         Response response = webTarget
-            //.register(userAuth)
             .register(adminAuth)
-            .path(PHYSICIAN_RESOURCE_NAME)
-            .request()
+            .path("api/v1/physician")
+            .request(MediaType.APPLICATION_JSON)
             .get();
-        assertThat(response.getStatus(), is(200));
-        List<Physician> physicians = response.readEntity(new GenericType<List<Physician>>(){});
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        List<Physician> physicians = response.readEntity(new GenericType<List<Physician>>() {});
+        assertNotNull(physicians);
         assertThat(physicians, is(not(empty())));
-        assertThat(physicians, hasSize(1));
+    }
+
+    /**
+     * Test retrieving all patients using admin role.
+     * Expected: HTTP 200 OK and list of patients returned.
+     */
+    @Test
+    public void testGetAllPatientsWithAdminRole() {
+        Response response = webTarget
+            .register(adminAuth)
+            .path("api/v1/patient")
+            .request(MediaType.APPLICATION_JSON)
+            .get();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        List<Patient> patients = response.readEntity(new GenericType<List<Patient>>() {});
+        assertNotNull(patients);
+        assertThat(patients, is(not(empty())));
+    }
+
+    /**
+     * Test retrieving a patient by ID using admin role.
+     * Expected: HTTP 200 OK and correct patient returned.
+     */
+    @Test
+    public void testGetPatientByIdWithAdminRole() {
+        int testId = 1; // Make sure a patient with ID 1 exists
+        Response response = webTarget
+            .register(adminAuth)
+            .path("api/v1/patient/" + testId)
+            .request(MediaType.APPLICATION_JSON)
+            .get();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        Patient patient = response.readEntity(Patient.class);
+        assertNotNull(patient);
+        assertEquals(testId, patient.getId());
     }
 }

@@ -18,6 +18,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,14 +27,20 @@ import jakarta.persistence.Table;
  * The persistent class for the patient database table.
  */
 //TODO PA01 - Add the missing annotations.
+
+//TODO PA02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
+@NamedQueries({
+    @NamedQuery(
+        name = "Patient.findById",
+        query = "SELECT p FROM Patient p WHERE p.id = :id"
+    ),
+    @NamedQuery(
+        name = "Patient.findWithPrescriptions",
+        query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :id"
+    )
+})
 @Entity
 @Table(name = "patient")
-//TODO PA02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-@NamedQuery(
-	    name = "Patient.findWithPrescriptions",
-	    query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :id"
-	)
-
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -12,6 +12,7 @@ import static jakarta.security.enterprise.identitystore.CredentialValidationResu
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.security.Principal;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
@@ -20,13 +21,15 @@ import jakarta.security.enterprise.credential.CallerOnlyCredential;
 import jakarta.security.enterprise.credential.UsernamePasswordCredential;
 import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 
-import org.glassfish.soteria.WrappingCallerPrincipal;
+import acmemedical.security.WrappingCallerPrincipal;
 
 import acmemedical.entity.SecurityRole;
 import acmemedical.entity.SecurityUser;
 import jakarta.security.enterprise.credential.Credential;
 import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
+
+
 
 @ApplicationScoped
 @Typed(CustomIdentityStore.class)
@@ -69,7 +72,8 @@ public class CustomIdentityStore implements IdentityStore {
                     boolean verified = pbAndjPasswordHash.verify(credentialPassword.toCharArray(), pwHash);
                     if (verified) {
                         Set<String> rolesForUser = jpaHelper.findRoleNamesForUser(callerName);
-                        result = new CredentialValidationResult(new WrappingCallerPrincipal(user), rolesForUser);
+                        result = new CredentialValidationResult(user.getUsername(), rolesForUser);
+
                     }
                 }
                 catch (Exception e) {
