@@ -45,6 +45,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -87,15 +89,14 @@ public class TestACMEMedicalSystem {
         webTarget = client.target(uri);
     }
     /**
-     * Test retrieving all physicians using admin role.
-     * Expected: HTTP 200 OK and non-empty list of physicians.
-     * @author manaf
+     * Test retrieving all physicians using admin credentials.
+     * Expects HTTP 200 and non-empty physician list.
      */
     @Test
     public void test01_all_physicians_with_adminrole() {
         Response response = webTarget
             .register(adminAuth)
-            .path("api/v1/physician")
+            .path("physician")  // Fixed: removed duplicate context root
             .request(MediaType.APPLICATION_JSON)
             .get();
 
@@ -106,15 +107,15 @@ public class TestACMEMedicalSystem {
         assertThat(physicians, is(not(empty())));
     }
 
-    /**
-     * Test retrieving all patients using admin role.
-     * Expected: HTTP 200 OK and list of patients returned.
+	/**
+     * Test retrieving all patients using admin credentials.
+     * Expects HTTP 200 and non-empty patient list.
      */
     @Test
     public void testGetAllPatientsWithAdminRole() {
         Response response = webTarget
             .register(adminAuth)
-            .path("api/v1/patient")
+            .path("patient") // Fixed: removed duplicate api/v1
             .request(MediaType.APPLICATION_JSON)
             .get();
 
@@ -126,15 +127,15 @@ public class TestACMEMedicalSystem {
     }
 
     /**
-     * Test retrieving a patient by ID using admin role.
-     * Expected: HTTP 200 OK and correct patient returned.
+     * Test retrieving a specific patient by ID using admin credentials.
+     * Adjusts ID as needed to match what's inserted in your DB or SQL script.
      */
     @Test
     public void testGetPatientByIdWithAdminRole() {
-        int testId = 1; // Make sure a patient with ID 1 exists
+        int testId = 1; // Make sure ID exists
         Response response = webTarget
             .register(adminAuth)
-            .path("api/v1/patient/" + testId)
+            .path("patient/" + testId) // Fixed: removed duplicate api/v1
             .request(MediaType.APPLICATION_JSON)
             .get();
 
@@ -144,4 +145,5 @@ public class TestACMEMedicalSystem {
         assertNotNull(patient);
         assertEquals(testId, patient.getId());
     }
+
 }
