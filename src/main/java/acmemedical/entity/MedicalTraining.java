@@ -54,7 +54,7 @@ public class MedicalTraining extends PojoBase implements Serializable {
 	public MedicalTraining() {
 		durationAndStatus = new DurationAndStatus();
 	}
-	
+	@JsonIgnore
 	public MedicalSchool getMedicalSchool() {
 		return school;
 	}

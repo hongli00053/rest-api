@@ -917,37 +917,41 @@ public class TestACMEMedicalSystem {
      * Test updating a medical certificate with admin role.
      */
 
-    @Test 
+    @Test
     public void test43_update_medical_certificate_with_adminrole() {
         int testId = 1;
 
-        MedicalCertificate updatedCertificate = new MedicalCertificate();
-        updatedCertificate.setId(testId); // 添加主键
-        updatedCertificate.setSigned((byte) 1);
+        // 
+        MedicalCertificate existing = webTarget
+            .register(adminAuth)
+            .path(MEDICAL_CERTIFICATE_RESOURCE_NAME + "/" + testId)
+            .request(MediaType.APPLICATION_JSON)
+            .get(MedicalCertificate.class);
 
-        MedicalTraining training = new MedicalTraining();
-        training.setId(1); 
-        updatedCertificate.setMedicalTraining(training);
+        assertNotNull(existing);  
 
-        Physician physician = new Physician();
-        physician.setId(1); 
-        updatedCertificate.setOwner(physician);
+
+        existing.setSigned((byte) 1);  
+        existing.setMedicalTraining(new MedicalTraining());
+        existing.getMedicalTraining().setId(1);
+        existing.setOwner(new Physician());
+        existing.getOwner().setId(1);
 
         Response response = webTarget
             .register(adminAuth)
             .path(MEDICAL_CERTIFICATE_RESOURCE_NAME + "/" + testId)
             .request(MediaType.APPLICATION_JSON)
-            .put(Entity.entity(updatedCertificate, MediaType.APPLICATION_JSON));
+            .put(Entity.entity(existing, MediaType.APPLICATION_JSON));
 
-        // ➜ 打印响应状态码与消息体
-        System.out.println("👉 Response status: " + response.getStatus());
-        System.out.println("👉 Response body: " + response.readEntity(String.class));
+        System.out.println("Response status: " + response.getStatus());
+        System.out.println("Response body: " + response.readEntity(String.class));
 
         assertTrue(
             response.getStatus() == Response.Status.OK.getStatusCode() ||
             response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()
         );
     }
+
 
 
     /**

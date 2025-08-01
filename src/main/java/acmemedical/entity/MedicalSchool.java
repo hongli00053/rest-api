@@ -23,10 +23,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -36,18 +38,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //TODO MS01 - Add the missing annotations.
 @Entity
 @Table(name = "medical_school")
-//TODO MS02 - MedicalSchool has subclasses PublicSchool and PrivateSchool. Look at Week 9 slides for InheritanceType.
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//FIXED: Use 'school_type' instead of 'public' to avoid mapping conflict
 @DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.INTEGER)
-//TODO MS03 - Do we need a mapped super class? If so, which one? Already extends PojoBase
 @AttributeOverride(name = "id", column = @Column(name = "school_id"))
-//TODO MS04 - Add in JSON annotations to indicate different sub-classes of MedicalSchool
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type",
-    visible = true
+    property = "type"
 )
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
@@ -60,6 +57,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     name = "MedicalSchool.findWithTrainings",
     query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class MedicalSchool extends PojoBase implements Serializable {
     private static final long serialVersionUID = 1L;
 
