@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +32,7 @@ import jakarta.persistence.NamedQuery;
 //TODO MT01 - Add the missing annotations.
 @Entity
 @Table(name = "medical_training")
+@AttributeOverride(name = "id", column = @Column(name = "training_id"))
 //TODO MT02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
 @NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :id")
 public class MedicalTraining extends PojoBase implements Serializable {
@@ -53,9 +55,6 @@ public class MedicalTraining extends PojoBase implements Serializable {
 		durationAndStatus = new DurationAndStatus();
 	}
 	
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "school_id")
 	public MedicalSchool getMedicalSchool() {
 		return school;
 	}
