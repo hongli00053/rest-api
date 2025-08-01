@@ -150,26 +150,46 @@ public class ACMEMedicalService implements Serializable {
         }
     }
 
+    /**
+     * Deletes a MedicalSchool entity by ID.
+     * Also handles cleanup of child entities (MedicalTraining and MedicalCertificate) to avoid constraint violations.
+     *
+     * @param id ID of the medical school to delete
+     * @return the deleted MedicalSchool entity if successful, null otherwise
+     */
     @Transactional
     public MedicalSchool deleteMedicalSchool(int id) {
+        // Retrieve the target MedicalSchool using a named query that includes its trainings
         MedicalSchool ms = getById(MedicalSchool.class, MedicalSchool.SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, id);
+
         if (ms != null) {
+            // Convert the Set to a List to avoid ConcurrentModificationException
             Set<MedicalTraining> medicalTrainings = ms.getMedicalTrainings();
             List<MedicalTraining> list = new LinkedList<>();
             medicalTrainings.forEach(list::add);
-            list.forEach(mt -> {
+
+            // Clean up references for each training before removal
+            for (MedicalTraining mt : list) {
                 if (mt.getCertificate() != null) {
+                    // Break bidirectional relationship from MedicalCertificate -> MedicalTraining
                     MedicalCertificate mc = getById(MedicalCertificate.class, MedicalCertificate.ID_CARD_QUERY_NAME, mt.getCertificate().getId());
                     mc.setMedicalTraining(null);
+                    em.merge(mc); // persist change
                 }
+
+                // Break MedicalTraining -> MedicalCertificate link
                 mt.setCertificate(null);
-                em.merge(mt);
-            });
+                em.merge(mt); // update the training
+            }
+
+            // Now it's safe to remove the MedicalSchool
             em.remove(ms);
             return ms;
         }
-        return null;
+
+        return null; // If not found
     }
+
 
     public boolean isDuplicated(MedicalSchool newMedicalSchool) {
         TypedQuery<Long> allMedicalSchoolsQuery = em.createNamedQuery(IS_DUPLICATE_QUERY_NAME, Long.class);

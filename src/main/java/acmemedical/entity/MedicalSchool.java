@@ -61,8 +61,10 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     private String name;
 
     // TODO MS06 - Add the 1:M annotation. What should be the cascade and fetch types?
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<MedicalTraining> medicalTrainings = new HashSet<>();
+
 
     // TODO MS07 - Add missing annotation.
     @Column(name = "public")

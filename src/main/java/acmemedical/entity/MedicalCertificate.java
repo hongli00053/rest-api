@@ -35,8 +35,8 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// TODO MC03 - Add annotations for 1:1 mapping.  What should be the cascade and fetch types?
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "training_id")
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "training_id", unique = true)
 	private MedicalTraining medicalTraining;
 
 	// TODO MC04 - Add annotations for M:1 mapping.  What should be the cascade and fetch types?
