@@ -41,6 +41,7 @@ public class ACMEMedicalService implements Serializable {
         cq.select(cq.from(Physician.class));
         return em.createQuery(cq).getResultList();
     }
+    public EntityManager getEntityManager() { return em; }
 
     public Physician getPhysicianById(int id) {
         return em.find(Physician.class, id);
@@ -48,15 +49,30 @@ public class ACMEMedicalService implements Serializable {
 
     @Transactional
     public Physician persistPhysician(Physician newPhysician) {
-        em.persist(newPhysician);
+        em.merge(newPhysician);
         return newPhysician;
     }
 
     @Transactional
     public void buildUserForNewPhysician(Physician newPhysician) {
+        // Construct default username
+        String username = DEFAULT_USER_PREFIX + "_" + newPhysician.getFirstName() + "." + newPhysician.getLastName();
+
+        // Check if the username already exists to prevent UNIQUE constraint violation
+        List<SecurityUser> existingUsers = em.createNamedQuery("SecurityUser.findByUsername", SecurityUser.class)
+            .setParameter("username", username)
+            .getResultList();
+
+        if (!existingUsers.isEmpty()) {
+            // Username already exists, abort creating duplicate user
+            throw new IllegalArgumentException("Username already exists: " + username);
+        }
+
+        // Create new security user
         SecurityUser userForNewPhysician = new SecurityUser();
-        userForNewPhysician.setUsername(
-            DEFAULT_USER_PREFIX + "_" + newPhysician.getFirstName() + "." + newPhysician.getLastName());
+        userForNewPhysician.setUsername(username);
+
+        // Generate password hash
         Map<String, String> pbAndjProperties = new HashMap<>();
         pbAndjProperties.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
         pbAndjProperties.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
@@ -65,14 +81,19 @@ public class ACMEMedicalService implements Serializable {
         pbAndjPasswordHash.initialize(pbAndjProperties);
         String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
         userForNewPhysician.setPwHash(pwHash);
+
+        // Associate physician and role
         userForNewPhysician.setPhysician(newPhysician);
         SecurityRole userRole = em.createNamedQuery("SecurityRole.findByName", SecurityRole.class)
                                   .setParameter("name", USER_ROLE)
                                   .getSingleResult();
         userForNewPhysician.getRoles().add(userRole);
         userRole.getUsers().add(userForNewPhysician);
+
+        // Persist user
         em.persist(userForNewPhysician);
     }
+
 
     @Transactional
     public Medicine setMedicineForPhysicianPatient(int physicianId, int patientId, Medicine newMedicine) {
@@ -278,8 +299,39 @@ public class ACMEMedicalService implements Serializable {
         em.remove(m);
     }
 
+
     @Transactional
-    public MedicalCertificate persist(MedicalCertificate mc) { em.persist(mc); return mc; }
+    public MedicalCertificate persist(MedicalCertificate mc) {
+        if (mc.getOwner() == null) {
+            Physician defaultPhysician = em.find(Physician.class, 1);
+            if (defaultPhysician != null) {
+                mc.setOwner(defaultPhysician);
+            }
+        }
+
+        if (mc.getMedicalTraining() == null) {
+            MedicalTraining defaultTraining = em.find(MedicalTraining.class, 1);
+            TypedQuery<MedicalCertificate> query = em.createQuery(
+                "SELECT c FROM MedicalCertificate c WHERE c.medicalTraining.id = :tid", MedicalCertificate.class);
+            query.setParameter("tid", defaultTraining.getId());
+
+            if (query.getResultList().isEmpty()) {
+                mc.setMedicalTraining(defaultTraining);
+            } else {
+     
+                MedicalTraining newTraining = new MedicalTraining();
+                newTraining.setMedicalSchool(defaultTraining.getMedicalSchool());
+                newTraining.setDurationAndStatus(defaultTraining.getDurationAndStatus());
+                em.persist(newTraining);
+                mc.setMedicalTraining(newTraining);
+            }
+        }
+
+        em.persist(mc);
+        return mc;
+    }
+
+
     @Transactional
     public MedicalCertificate update(int id, MedicalCertificate mc) {
         MedicalCertificate found = em.find(MedicalCertificate.class, id);
@@ -290,6 +342,7 @@ public class ACMEMedicalService implements Serializable {
         }
         return found;
     }
+    
     @Transactional
     public void delete(MedicalCertificate mc) {
         if (!em.contains(mc)) mc = em.merge(mc);

@@ -189,8 +189,8 @@ public class TestACMEMedicalSystem {
     @Test
     public void test05_create_physician_with_adminrole() {
         Physician newPhysician = new Physician();
-        newPhysician.setFirstName("Test");
-        newPhysician.setLastName("Doctor");
+        newPhysician.setFirstName("Test_Physician_05");
+        newPhysician.setLastName("Doctor_05");
 
         Response response = webTarget
             .register(adminAuth)
@@ -203,9 +203,10 @@ public class TestACMEMedicalSystem {
         Physician createdPhysician = response.readEntity(Physician.class);
         assertNotNull(createdPhysician);
         assertNotNull(createdPhysician.getId());
-        assertEquals("Test", createdPhysician.getFirstName());
-        assertEquals("Doctor", createdPhysician.getLastName());
+        assertEquals("Test_Physician_05", createdPhysician.getFirstName());
+        assertEquals("Doctor_05", createdPhysician.getLastName());
     }
+
 
     /**
      * Test creating physician with user role (should fail).
@@ -214,8 +215,8 @@ public class TestACMEMedicalSystem {
     @Test
     public void test06_create_physician_with_userrole_should_fail() {
         Physician newPhysician = new Physician();
-        newPhysician.setFirstName("Test");
-        newPhysician.setLastName("Doctor");
+        newPhysician.setFirstName("Test6");
+        newPhysician.setLastName("Doctor6");
 
         Response response = webTarget
             .register(userAuth)
@@ -915,11 +916,22 @@ public class TestACMEMedicalSystem {
     /**
      * Test updating a medical certificate with admin role.
      */
-    @Test
+
+    @Test 
     public void test43_update_medical_certificate_with_adminrole() {
         int testId = 1;
+
         MedicalCertificate updatedCertificate = new MedicalCertificate();
-        // Set updated properties
+        updatedCertificate.setId(testId); // 添加主键
+        updatedCertificate.setSigned((byte) 1);
+
+        MedicalTraining training = new MedicalTraining();
+        training.setId(1); 
+        updatedCertificate.setMedicalTraining(training);
+
+        Physician physician = new Physician();
+        physician.setId(1); 
+        updatedCertificate.setOwner(physician);
 
         Response response = webTarget
             .register(adminAuth)
@@ -927,9 +939,16 @@ public class TestACMEMedicalSystem {
             .request(MediaType.APPLICATION_JSON)
             .put(Entity.entity(updatedCertificate, MediaType.APPLICATION_JSON));
 
-        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode() ||
-                  response.getStatus() == Response.Status.NOT_FOUND.getStatusCode());
+        // ➜ 打印响应状态码与消息体
+        System.out.println("👉 Response status: " + response.getStatus());
+        System.out.println("👉 Response body: " + response.readEntity(String.class));
+
+        assertTrue(
+            response.getStatus() == Response.Status.OK.getStatusCode() ||
+            response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()
+        );
     }
+
 
     /**
      * Test deleting a medical certificate with admin role.

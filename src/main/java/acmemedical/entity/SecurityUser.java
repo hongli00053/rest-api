@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,10 +38,16 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "security_user")
-@NamedQuery(
-    name = "SecurityUser.findWithRolesAndPhysician",
-    query = "SELECT u FROM SecurityUser u LEFT JOIN FETCH u.roles LEFT JOIN FETCH u.physician WHERE u.username = :username"
-)
+@NamedQueries({
+    @NamedQuery(
+        name = "SecurityUser.findWithRolesAndPhysician",
+        query = "SELECT u FROM SecurityUser u LEFT JOIN FETCH u.roles LEFT JOIN FETCH u.physician WHERE u.username = :username"
+    ),
+    @NamedQuery(
+        name = "SecurityUser.findByUsername",
+        query = "SELECT u FROM SecurityUser u WHERE u.username = :username"
+    )
+})
 public class SecurityUser implements Serializable, Principal {
     private static final long serialVersionUID = 1L;
 

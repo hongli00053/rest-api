@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.NamedQuery;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -37,11 +38,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Table(name = "medical_school")
 //TODO MS02 - MedicalSchool has subclasses PublicSchool and PrivateSchool. Look at Week 9 slides for InheritanceType.
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "school_type", discriminatorType = DiscriminatorType.STRING)
+//FIXED: Use 'school_type' instead of 'public' to avoid mapping conflict
+@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.INTEGER)
 //TODO MS03 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-
+@AttributeOverride(name = "id", column = @Column(name = "school_id"))
 //TODO MS04 - Add in JSON annotations to indicate different sub-classes of MedicalSchool
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "entity-type")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type",
+    visible = true
+)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
     @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
@@ -50,9 +57,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :name")
 @NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :id")
 @NamedQuery(
-	    name = "MedicalSchool.findWithTrainings",
-	    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
-	)
+    name = "MedicalSchool.findWithTrainings",
+    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
+)
 public abstract class MedicalSchool extends PojoBase implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -65,9 +72,8 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     @JsonIgnore
     private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
-
     // TODO MS07 - Add missing annotation.
-    @Column(name = "public")
+    @Column(name = "public", nullable = false, insertable = false, updatable = false)
     private boolean isPublic;
 
     // NamedQuery constants for JPA queries
