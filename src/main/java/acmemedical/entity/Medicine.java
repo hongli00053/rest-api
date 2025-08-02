@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -53,6 +55,7 @@ public class Medicine extends PojoBase implements Serializable {
 	private String genericName;
 
 	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "medicine")
+	@JsonIgnore
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Medicine() {

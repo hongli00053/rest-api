@@ -37,7 +37,8 @@ import jakarta.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "MedicalCertificate.findAll", query = "SELECT c FROM MedicalCertificate c"),
     @NamedQuery(name = "MedicalCertificate.findByPhysicianId", query = "SELECT c FROM MedicalCertificate c WHERE c.owner.id = :physicianId"),
-    @NamedQuery(name = "MedicalCertificate.findById", query = "SELECT c FROM MedicalCertificate c WHERE c.id = :param1")
+    @NamedQuery(name = "MedicalCertificate.findById", query = "SELECT c FROM MedicalCertificate c WHERE c.id = :param1"),
+    @NamedQuery(name = "MedicalCertificate.findByIdCard", query = "SELECT c FROM MedicalCertificate c WHERE c.id = :param1")
 })
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;

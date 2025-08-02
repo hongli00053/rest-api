@@ -71,6 +71,7 @@ import acmemedical.entity.MedicalCertificate;
 import acmemedical.entity.MedicalTraining;
 import acmemedical.entity.PublicSchool;
 import acmemedical.entity.PrivateSchool;
+import acmemedical.entity.PrescriptionPK;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -452,6 +453,7 @@ public class TestACMEMedicalSystem {
     public void test17_medical_school_by_id() {
         int testId = 1;
         Response response = webTarget
+            .register(adminAuth)
             .path(MEDICAL_SCHOOL_RESOURCE_NAME + "/" + testId)
             .request(MediaType.APPLICATION_JSON)
             .get();
@@ -527,6 +529,7 @@ public class TestACMEMedicalSystem {
     public void test21_delete_medical_school() {
         int testId = 2; // Use different ID to avoid conflicts
         Response response = webTarget
+            .register(adminAuth)
             .path(MEDICAL_SCHOOL_RESOURCE_NAME + "/" + testId)
             .request(MediaType.APPLICATION_JSON)
             .delete();
@@ -559,9 +562,13 @@ public class TestACMEMedicalSystem {
     public void test23_medical_school_by_invalid_id() {
         int invalidId = 99999;
         Response response = webTarget
+            .register(adminAuth)
             .path(MEDICAL_SCHOOL_RESOURCE_NAME + "/" + invalidId)
             .request(MediaType.APPLICATION_JSON)
             .get();
+
+        System.out.println("test23 actual status: " + response.getStatus());
+        System.out.println("test23 expected: 404 or 200, got: " + response.getStatus());
 
         assertTrue(response.getStatus() == Response.Status.NOT_FOUND.getStatusCode() ||
                   response.getStatus() == Response.Status.OK.getStatusCode()); // Might return null object
@@ -757,6 +764,23 @@ public class TestACMEMedicalSystem {
         Prescription newPrescription = new Prescription();
         newPrescription.setNumberOfRefills(3);
         newPrescription.setPrescriptionInformation("Take twice daily");
+        
+        // Set up the composite key
+        PrescriptionPK pk = new PrescriptionPK(1, 1);
+        newPrescription.setId(pk);
+        
+        // Set up entity references (these are required for JPA)
+        Physician physician = new Physician();
+        physician.setId(1);
+        newPrescription.setPhysician(physician);
+        
+        Patient patient = new Patient();
+        patient.setId(1);
+        newPrescription.setPatient(patient);
+        
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+        newPrescription.setMedicine(medicine);
 
         Response response = webTarget
             .register(adminAuth)
@@ -778,6 +802,23 @@ public class TestACMEMedicalSystem {
         Prescription updatedPrescription = new Prescription();
         updatedPrescription.setNumberOfRefills(5);
         updatedPrescription.setPrescriptionInformation("Take three times daily");
+        
+        // Set up the composite key
+        PrescriptionPK pk = new PrescriptionPK(1, 1);
+        updatedPrescription.setId(pk);
+        
+        // Set up entity references (these are required for JPA)
+        Physician physician = new Physician();
+        physician.setId(1);
+        updatedPrescription.setPhysician(physician);
+        
+        Patient patient = new Patient();
+        patient.setId(1);
+        updatedPrescription.setPatient(patient);
+        
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+        updatedPrescription.setMedicine(medicine);
 
         Response response = webTarget
             .register(adminAuth)
@@ -815,6 +856,23 @@ public class TestACMEMedicalSystem {
     public void test37_create_prescription_with_userrole_should_fail() {
         Prescription newPrescription = new Prescription();
         newPrescription.setNumberOfRefills(1);
+        
+        // Set up the composite key
+        PrescriptionPK pk = new PrescriptionPK(1, 1);
+        newPrescription.setId(pk);
+        
+        // Set up entity references (these are required for JPA)
+        Physician physician = new Physician();
+        physician.setId(1);
+        newPrescription.setPhysician(physician);
+        
+        Patient patient = new Patient();
+        patient.setId(1);
+        newPrescription.setPatient(patient);
+        
+        Medicine medicine = new Medicine();
+        medicine.setId(1);
+        newPrescription.setMedicine(medicine);
 
         Response response = webTarget
             .register(userAuth)

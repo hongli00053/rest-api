@@ -151,9 +151,7 @@ public class ACMEMedicalService implements Serializable {
     }
 
     public MedicalSchool getMedicalSchoolById(int id) {
-        TypedQuery<MedicalSchool> specificMedicalSchoolQuery = em.createNamedQuery(SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, MedicalSchool.class);
-        specificMedicalSchoolQuery.setParameter(PARAM1, id);
-        return specificMedicalSchoolQuery.getSingleResult();
+        return getById(MedicalSchool.class, SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, id);
     }
 
     public <T> List<T> getAll(Class<T> entity, String namedQuery) {
@@ -262,17 +260,44 @@ public class ACMEMedicalService implements Serializable {
     // === @Mohammad: Added REST persistence/update/delete logic ===
 
     @Transactional
-    public Patient persist(Patient p) { em.persist(p); return p; }
+    public Patient persist(Patient p) { 
+        em.persist(p); 
+        return p; 
+    }
+    
     @Transactional
     public Patient update(int id, Patient p) {
         Patient found = em.find(Patient.class, id);
         if (found != null) {
-            em.refresh(found);
-            em.merge(p);
+            // Update the found entity with new values
+            if (p.getFirstName() != null) {
+                found.setFirstName(p.getFirstName());
+            }
+            if (p.getLastName() != null) {
+                found.setLastName(p.getLastName());
+            }
+            if (p.getYear() != 0) {
+                found.setYear(p.getYear());
+            }
+            if (p.getAddress() != null) {
+                found.setAddress(p.getAddress());
+            }
+            if (p.getHeight() != 0) {
+                found.setHeight(p.getHeight());
+            }
+            if (p.getWeight() != 0) {
+                found.setWeight(p.getWeight());
+            }
+            // For byte, we need to check differently
+            found.setSmoker(p.getSmoker());
+            
+            // Merge the updated entity
+            found = em.merge(found);
             em.flush();
         }
         return found;
     }
+    
     @Transactional
     public void delete(Patient p) {
         if (!em.contains(p)) p = em.merge(p);
@@ -280,9 +305,16 @@ public class ACMEMedicalService implements Serializable {
     }
 
     @Transactional
-    public Prescription persist(Prescription p) { em.persist(p); return p; }
+    public Prescription persist(Prescription p) { 
+        em.persist(p); 
+        return p; 
+    }
+    
     @Transactional
-    public Prescription update(Prescription p) { return em.merge(p); }
+    public Prescription update(Prescription p) { 
+        return em.merge(p); 
+    }
+    
     @Transactional
     public void delete(Prescription p) {
         if (!em.contains(p)) p = em.merge(p);
@@ -290,15 +322,21 @@ public class ACMEMedicalService implements Serializable {
     }
 
     @Transactional
-    public Medicine persist(Medicine m) { em.persist(m); return m; }
+    public Medicine persist(Medicine m) { 
+        em.persist(m); 
+        return m; 
+    }
+    
     @Transactional
-    public Medicine update(Medicine m) { return em.merge(m); }
+    public Medicine update(Medicine m) { 
+        return em.merge(m); 
+    }
+    
     @Transactional
     public void delete(Medicine m) {
         if (!em.contains(m)) m = em.merge(m);
         em.remove(m);
     }
-
 
     @Transactional
     public MedicalCertificate persist(MedicalCertificate mc) {
@@ -318,7 +356,6 @@ public class ACMEMedicalService implements Serializable {
             if (query.getResultList().isEmpty()) {
                 mc.setMedicalTraining(defaultTraining);
             } else {
-     
                 MedicalTraining newTraining = new MedicalTraining();
                 newTraining.setMedicalSchool(defaultTraining.getMedicalSchool());
                 newTraining.setDurationAndStatus(defaultTraining.getDurationAndStatus());
@@ -330,7 +367,6 @@ public class ACMEMedicalService implements Serializable {
         em.persist(mc);
         return mc;
     }
-
 
     @Transactional
     public MedicalCertificate update(int id, MedicalCertificate mc) {

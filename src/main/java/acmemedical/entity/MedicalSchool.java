@@ -44,7 +44,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "type",
+    defaultImpl = PublicSchool.class
 )
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
@@ -90,8 +91,6 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     }
 
     // TODO MS08 - Is an annotation needed here? No, standard getter is sufficient
-    @JsonIgnore
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public Set<MedicalTraining> getMedicalTrainings() {
         return medicalTrainings;
     }

@@ -34,7 +34,8 @@ import jakarta.persistence.NamedQuery;
 @Table(name = "medical_training")
 @AttributeOverride(name = "id", column = @Column(name = "training_id"))
 //TODO MT02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-@NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :id")
+@NamedQuery(name = "MedicalTraining.findAll", query = "SELECT t FROM MedicalTraining t")
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :param1")
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

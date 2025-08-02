@@ -77,6 +77,17 @@ public class PrescriptionResource {
     @RolesAllowed(ADMIN_ROLE)
     public Response updatePrescription(Prescription updatedPresc) {
         LOG.debug("Updating prescription");
+        
+        // Check if the prescription exists
+        if (updatedPresc.getId() == null || updatedPresc.getId().getPhysicianId() == 0 || updatedPresc.getId().getPatientId() == 0) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        
+        Prescription existingPresc = service.findByCompositeId(Prescription.class, updatedPresc.getId());
+        if (existingPresc == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        
         Prescription merged = service.update(updatedPresc);
         return Response.ok(merged).build();
     }
