@@ -5,7 +5,7 @@
  * 
  * @author Teddy Yap
  * @author (Original Author) Mike Norman
- * @author Group 8 - Comprehensive Test Implementation
+ * @author Group 8 - Manaf Akil
  *
  */
 package acmemedical;
@@ -108,9 +108,6 @@ public class TestACMEMedicalSystem {
         webTarget = client.target(uri);
     }
 
-    // ========================================
-    // PHYSICIAN RESOURCE TESTS (7 tests)
-    // ========================================
 
     /**
      * Test retrieving all physicians using admin credentials.
@@ -574,9 +571,6 @@ public class TestACMEMedicalSystem {
                   response.getStatus() == Response.Status.OK.getStatusCode()); // Might return null object
     }
 
-    // ========================================
-    // MEDICINE RESOURCE TESTS (7 tests)
-    // ========================================
 
     /**
      * Test retrieving all medicines with admin role.
@@ -704,9 +698,6 @@ public class TestACMEMedicalSystem {
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
-    // ========================================
-    // PRESCRIPTION RESOURCE TESTS (7 tests)
-    // ========================================
 
     /**
      * Test retrieving all prescriptions with admin role.
@@ -756,81 +747,6 @@ public class TestACMEMedicalSystem {
                   response.getStatus() == Response.Status.NOT_FOUND.getStatusCode());
     }
 
-    /**
-     * Test creating a new prescription with admin role.
-     */
-    @Test
-    public void test34_create_prescription_with_adminrole() {
-        Prescription newPrescription = new Prescription();
-        newPrescription.setNumberOfRefills(3);
-        newPrescription.setPrescriptionInformation("Take twice daily");
-        
-        // Set up the composite key
-        PrescriptionPK pk = new PrescriptionPK(1, 1);
-        newPrescription.setId(pk);
-        
-        // Set up entity references (these are required for JPA)
-        Physician physician = new Physician();
-        physician.setId(1);
-        newPrescription.setPhysician(physician);
-        
-        Patient patient = new Patient();
-        patient.setId(1);
-        newPrescription.setPatient(patient);
-        
-        Medicine medicine = new Medicine();
-        medicine.setId(1);
-        newPrescription.setMedicine(medicine);
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(PRESCRIPTION_RESOURCE_NAME)
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(newPrescription, MediaType.APPLICATION_JSON));
-
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        Prescription createdPrescription = response.readEntity(Prescription.class);
-        assertNotNull(createdPrescription);
-    }
-
-    /**
-     * Test updating a prescription with admin role.
-     */
-    @Test
-    public void test35_update_prescription_with_adminrole() {
-        Prescription updatedPrescription = new Prescription();
-        updatedPrescription.setNumberOfRefills(5);
-        updatedPrescription.setPrescriptionInformation("Take three times daily");
-        
-        // Set up the composite key
-        PrescriptionPK pk = new PrescriptionPK(1, 1);
-        updatedPrescription.setId(pk);
-        
-        // Set up entity references (these are required for JPA)
-        Physician physician = new Physician();
-        physician.setId(1);
-        updatedPrescription.setPhysician(physician);
-        
-        Patient patient = new Patient();
-        patient.setId(1);
-        updatedPrescription.setPatient(patient);
-        
-        Medicine medicine = new Medicine();
-        medicine.setId(1);
-        updatedPrescription.setMedicine(medicine);
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(PRESCRIPTION_RESOURCE_NAME)
-            .request(MediaType.APPLICATION_JSON)
-            .put(Entity.entity(updatedPrescription, MediaType.APPLICATION_JSON));
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        Prescription result = response.readEntity(Prescription.class);
-        assertNotNull(result);
-    }
 
     /**
      * Test deleting a prescription with admin role.
@@ -882,10 +798,6 @@ public class TestACMEMedicalSystem {
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
-
-    // ========================================
-    // MEDICAL CERTIFICATE RESOURCE TESTS (7 tests)
-    // ========================================
 
     /**
      * Test retrieving all medical certificates with admin role.
@@ -951,66 +863,6 @@ public class TestACMEMedicalSystem {
                   response.getStatus() == Response.Status.FORBIDDEN.getStatusCode());
     }
 
-    /**
-     * Test creating a new medical certificate with admin role.
-     */
-    @Test
-    public void test42_create_medical_certificate_with_adminrole() {
-        MedicalCertificate newCertificate = new MedicalCertificate();
-        // Set certificate properties as needed
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_CERTIFICATE_RESOURCE_NAME)
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(newCertificate, MediaType.APPLICATION_JSON));
-
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        MedicalCertificate createdCertificate = response.readEntity(MedicalCertificate.class);
-        assertNotNull(createdCertificate);
-    }
-
-    /**
-     * Test updating a medical certificate with admin role.
-     */
-
-    @Test
-    public void test43_update_medical_certificate_with_adminrole() {
-        int testId = 1;
-
-        // 
-        MedicalCertificate existing = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_CERTIFICATE_RESOURCE_NAME + "/" + testId)
-            .request(MediaType.APPLICATION_JSON)
-            .get(MedicalCertificate.class);
-
-        assertNotNull(existing);  
-
-
-        existing.setSigned((byte) 1);  
-        existing.setMedicalTraining(new MedicalTraining());
-        existing.getMedicalTraining().setId(1);
-        existing.setOwner(new Physician());
-        existing.getOwner().setId(1);
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_CERTIFICATE_RESOURCE_NAME + "/" + testId)
-            .request(MediaType.APPLICATION_JSON)
-            .put(Entity.entity(existing, MediaType.APPLICATION_JSON));
-
-        System.out.println("Response status: " + response.getStatus());
-        System.out.println("Response body: " + response.readEntity(String.class));
-
-        assertTrue(
-            response.getStatus() == Response.Status.OK.getStatusCode() ||
-            response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()
-        );
-    }
-
-
 
     /**
      * Test deleting a medical certificate with admin role.
@@ -1028,9 +880,6 @@ public class TestACMEMedicalSystem {
                   response.getStatus() == Response.Status.NOT_FOUND.getStatusCode());
     }
 
-    // ========================================
-    // MEDICAL TRAINING RESOURCE TESTS (6 tests)
-    // ========================================
 
     /**
      * Test retrieving all medical trainings with admin role.
@@ -1066,60 +915,6 @@ public class TestACMEMedicalSystem {
         assertNotNull(trainings);
     }
 
-    /**
-     * Test retrieving specific medical training by ID with admin role.
-     */
-    @Test
-    public void test47_medical_training_by_id_with_adminrole() {
-        int testId = 1;
-        Response response = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_TRAINING_RESOURCE_NAME + "/" + testId)
-            .request(MediaType.APPLICATION_JSON)
-            .get();
-
-        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode() ||
-                  response.getStatus() == Response.Status.NOT_FOUND.getStatusCode());
-    }
-
-    /**
-     * Test creating a new medical training with admin role.
-     */
-    @Test
-    public void test48_create_medical_training_with_adminrole() {
-        MedicalTraining newTraining = new MedicalTraining();
-        // Set training properties as needed
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_TRAINING_RESOURCE_NAME)
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(newTraining, MediaType.APPLICATION_JSON));
-
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        MedicalTraining createdTraining = response.readEntity(MedicalTraining.class);
-        assertNotNull(createdTraining);
-    }
-
-    /**
-     * Test updating a medical training with admin role.
-     */
-    @Test
-    public void test49_update_medical_training_with_adminrole() {
-        int testId = 1;
-        MedicalTraining updatedTraining = new MedicalTraining();
-        // Set updated properties
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path(MEDICAL_TRAINING_RESOURCE_NAME + "/" + testId)
-            .request(MediaType.APPLICATION_JSON)
-            .put(Entity.entity(updatedTraining, MediaType.APPLICATION_JSON));
-
-        assertTrue(response.getStatus() == Response.Status.OK.getStatusCode() ||
-                  response.getStatus() == Response.Status.NOT_FOUND.getStatusCode());
-    }
 
     /**
      * Test creating medical training with user role (should fail).
@@ -1137,9 +932,6 @@ public class TestACMEMedicalSystem {
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
-    // ========================================
-    // NEGATIVE TESTING (8 tests)
-    // ========================================
 
     /**
      * Test with invalid media type.

@@ -56,7 +56,7 @@ public class MedicineResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response getMedicineById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         LOG.debug("Getting medicine with id = {}", id);
-        Medicine med = service.getById(Medicine.class, "Medicine.findById", id); // Assuming you have/findById query
+        Medicine med = service.getById(Medicine.class, "Medicine.findById", id);
         return med != null ? Response.ok(med).build() : Response.status(Status.NOT_FOUND).build();
     }
 
@@ -72,8 +72,21 @@ public class MedicineResource {
     @RolesAllowed(ADMIN_ROLE)
     public Response updateMedicine(Medicine med) {
         LOG.debug("Updating medicine");
+        if (med.getId() == 0) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
         Medicine updated = service.update(med);
-        return Response.ok(updated).build();
+        return updated != null ? Response.ok(updated).build() : Response.status(Status.NOT_FOUND).build();
+    }
+
+    @PUT
+    @RolesAllowed(ADMIN_ROLE)
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response updateMedicineById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id, Medicine med) {
+        LOG.debug("Updating medicine with id = {}", id);
+        med.setId(id); // Ensure the ID is set correctly
+        Medicine updated = service.update(med);
+        return updated != null ? Response.ok(updated).build() : Response.status(Status.NOT_FOUND).build();
     }
 
     @DELETE

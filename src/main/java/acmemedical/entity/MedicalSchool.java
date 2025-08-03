@@ -2,7 +2,7 @@
  * File:  MedicalSchool.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Hongli Ren, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -52,11 +52,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
 })
 @NamedQuery(name = "MedicalSchool.findAll", query = "SELECT s FROM MedicalSchool s")
-@NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :name")
-@NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :id")
+@NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :param1")
+@NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :param1")
 @NamedQuery(
     name = "MedicalSchool.findWithTrainings",
-    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
+    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :param1"
 )
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class MedicalSchool extends PojoBase implements Serializable {

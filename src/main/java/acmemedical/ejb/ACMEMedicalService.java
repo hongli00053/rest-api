@@ -151,7 +151,7 @@ public class ACMEMedicalService implements Serializable {
     }
 
     public MedicalSchool getMedicalSchoolById(int id) {
-        return getById(MedicalSchool.class, SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME, id);
+        return getById(MedicalSchool.class, MedicalSchool.FIND_BY_ID, id);
     }
 
     public <T> List<T> getAll(Class<T> entity, String namedQuery) {
@@ -328,8 +328,32 @@ public class ACMEMedicalService implements Serializable {
     }
     
     @Transactional
-    public Medicine update(Medicine m) { 
-        return em.merge(m); 
+    public Medicine update(Medicine m) {
+        Medicine existing = em.find(Medicine.class, m.getId());
+        if (existing != null) {
+            // Update the existing entity with new values
+            if (m.getDrugName() != null) {
+                existing.setDrugName(m.getDrugName());
+            }
+            if (m.getManufacturerName() != null) {
+                existing.setManufacturerName(m.getManufacturerName());
+            }
+            if (m.getDosageInformation() != null) {
+                existing.setDosageInformation(m.getDosageInformation());
+            }
+            if (m.getChemicalName() != null) {
+                existing.setChemicalName(m.getChemicalName());
+            }
+            if (m.getGenericName() != null) {
+                existing.setGenericName(m.getGenericName());
+            }
+            
+            // Merge and flush
+            existing = em.merge(existing);
+            em.flush();
+            return existing;
+        }
+        return null;
     }
     
     @Transactional

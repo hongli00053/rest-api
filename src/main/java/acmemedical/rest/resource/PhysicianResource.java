@@ -23,6 +23,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.TypedQuery;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -57,7 +58,7 @@ public class PhysicianResource {
     protected SecurityContext sc;
 
     @GET
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can get the list of all physicians.
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can get the list of all physicians.
     @RolesAllowed({ADMIN_ROLE})
     public Response getPhysicians() {
         LOG.debug("retrieving all physicians ...");
@@ -67,7 +68,7 @@ public class PhysicianResource {
     }
 
     @GET
- // A user with either the role ‘ADMIN_ROLE’ or ‘USER_ROLE’ can get a specific physician.
+ // A user with either the role 'ADMIN_ROLE' or 'USER_ROLE' can get a specific physician.
  @RolesAllowed({ADMIN_ROLE, USER_ROLE})
  @Path(RESOURCE_PATH_ID_PATH)
  public Response getPhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
@@ -106,7 +107,7 @@ public class PhysicianResource {
 
 
     @POST
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can add a new physician.
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can add a new physician.
     @RolesAllowed({ADMIN_ROLE})
     public Response addPhysician(Physician newPhysician) {
         Response response = null;
@@ -118,13 +119,30 @@ public class PhysicianResource {
     }
 
     @PUT
-    //Only an ‘ADMIN_ROLE’ user can associate a Medicine and/or Patient to a Physician.
+    //Only an 'ADMIN_ROLE' user can associate a Medicine and/or Patient to a Physician.
     @RolesAllowed({ADMIN_ROLE})
     @Path(PHYSICIAN_PATIENT_MEDICINE_RESOURCE_PATH)
     public Response updateMedicineForPhysicianPatient(@PathParam("physicianId") int physicianId, @PathParam("patientId") int patientId, Medicine newMedicine) {
         Response response = null;
         Medicine medicine = service.setMedicineForPhysicianPatient(physicianId, patientId, newMedicine);
         response = Response.ok(medicine).build();
+        return response;
+    }
+
+    @DELETE
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can delete a physician.
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response deletePhysician(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        LOG.debug("deleting physician with id = {}", id);
+        Response response = null;
+        Physician physicianToDelete = service.getPhysicianById(id);
+        if (physicianToDelete == null) {
+            response = Response.status(Status.NOT_FOUND).build();
+        } else {
+            service.deletePhysicianById(id);
+            response = Response.ok().build();
+        }
         return response;
     }
     

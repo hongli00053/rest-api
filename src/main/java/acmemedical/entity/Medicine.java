@@ -32,6 +32,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "medicine")
 @NamedQuery(name = "Medicine.findAll", query = "SELECT m FROM Medicine m")
+@NamedQuery(name = "Medicine.findById", query = "SELECT m FROM Medicine m WHERE m.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "medicine_id"))
 public class Medicine extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
