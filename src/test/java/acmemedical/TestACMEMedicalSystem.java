@@ -5,7 +5,7 @@
  * 
  * @author Teddy Yap
  * @author (Original Author) Mike Norman
- * @author Group 8 - Manaf Akil
+ * @author Manaf Akil
  *
  */
 package acmemedical;
