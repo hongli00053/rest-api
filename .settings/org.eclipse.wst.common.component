@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                                        
+<<<<<<< HEAD
+                                            
+=======
+                                                                        
+    
+    
+    
+    
+    
+    
+    
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+    
     
     
     
@@ -9,7 +21,19 @@
     
     
     <wb-module deploy-name="rest-acmemedical-0.0.1-SNAPSHOT">
-                                                                                
+<<<<<<< HEAD
+                                                                                        
+=======
+                                                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+        
         
         
         
@@ -19,7 +43,19 @@
         
         
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-                                                                                
+<<<<<<< HEAD
+                                                                                        
+=======
+                                                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+        
         
         
         
@@ -29,7 +65,19 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-                                                                                
+<<<<<<< HEAD
+                                                                                        
+=======
+                                                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+        
         
         
         
@@ -39,7 +87,19 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-                                                                                
+<<<<<<< HEAD
+                                                                                        
+=======
+                                                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+        
         
         
         
@@ -49,13 +109,37 @@
         
         
         <property name="java-output-path" value="/REST-ACMEMedical-Skeleton/target/classes"/>
-                                                
+<<<<<<< HEAD
+                                                        
+=======
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+        
         
         
         
         
         <property name="context-root" value="rest-acmemedical"/>
-                                                                            
+<<<<<<< HEAD
+                                                                                    
+=======
+                                                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+    
     
     
     
@@ -65,7 +149,19 @@
     
     
     </wb-module>
-                                    
+<<<<<<< HEAD
+                                        
+=======
+                                                                    
+
+
+
+
+
+
+
+>>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
+
 
 
 
