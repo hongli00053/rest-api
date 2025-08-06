@@ -34,18 +34,12 @@ import jakarta.persistence.Table;
 @AttributeOverride(name = "id", column = @Column(name = "certificate_id"))
 //TODO MC02 - Do we need a mapped super class?  If so, which one?
 // Already extends PojoBase
-<<<<<<< HEAD
-@NamedQuery(name = "MedicalCertificate.findByIdCard", query = "SELECT c FROM MedicalCertificate c WHERE c.idCard = :idCard")
-@NamedQuery(name = "MedicalCertificate.findByPhysicianId", 
-query = "SELECT c FROM MedicalCertificate c WHERE c.owner.id = :physicianId")
-=======
 @NamedQueries({
     @NamedQuery(name = "MedicalCertificate.findAll", query = "SELECT c FROM MedicalCertificate c"),
     @NamedQuery(name = "MedicalCertificate.findByPhysicianId", query = "SELECT c FROM MedicalCertificate c WHERE c.owner.id = :physicianId"),
     @NamedQuery(name = "MedicalCertificate.findById", query = "SELECT c FROM MedicalCertificate c WHERE c.id = :param1"),
     @NamedQuery(name = "MedicalCertificate.findByIdCard", query = "SELECT c FROM MedicalCertificate c WHERE c.id = :param1")
 })
->>>>>>> e21ae582f7b516c01f5d2bad7cf1da4e72e35dc4
 public class MedicalCertificate extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -71,7 +65,7 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	}
 
 	public MedicalCertificate(MedicalTraining medicalTraining, Physician owner, byte signed) {
-		this();
+		super();
 		this.medicalTraining = medicalTraining;
 		this.owner = owner;
 		this.signed = signed;
@@ -84,7 +78,6 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	public void setMedicalTraining(MedicalTraining medicalTraining) {
 		this.medicalTraining = medicalTraining;
 	}
-	
 
 	public Physician getOwner() {
 		return owner;
@@ -101,6 +94,7 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	public void setSigned(byte signed) {
 		this.signed = signed;
 	}
+	
 	@JsonIgnore
 	public void setSigned(boolean signed) {
 		this.signed = (byte) (signed ? 0b0001 : 0b0000);
