@@ -3,7 +3,7 @@
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
- * @author Chengcheng Xiong, Group 8
+ * @author Manaf Akil, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;

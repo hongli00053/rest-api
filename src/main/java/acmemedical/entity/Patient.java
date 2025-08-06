@@ -2,7 +2,7 @@
  * File:  Patient.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Mohammad Abdelqadiredris, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -13,11 +13,13 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,14 +28,25 @@ import jakarta.persistence.Table;
  * The persistent class for the patient database table.
  */
 //TODO PA01 - Add the missing annotations.
+
+//TODO PA02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
+@NamedQueries({
+    @NamedQuery(
+        name = "Patient.findAll",
+        query = "SELECT p FROM Patient p"
+    ),
+    @NamedQuery(
+        name = "Patient.findById",
+        query = "SELECT p FROM Patient p WHERE p.id = :param1"
+    ),
+    @NamedQuery(
+        name = "Patient.findWithPrescriptions",
+        query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :param1"
+    )
+})
 @Entity
 @Table(name = "patient")
-//TODO PA02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-@NamedQuery(
-	    name = "Patient.findWithPrescriptions",
-	    query = "SELECT p FROM Patient p LEFT JOIN FETCH p.prescriptions WHERE p.id = :id"
-	)
-
+@AttributeOverride(name = "id", column = @Column(name = "patient_id"))
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -69,7 +82,7 @@ public class Patient extends PojoBase implements Serializable {
 
 	// TODO PA10 - Add annotations for 1:M relation. What should be the cascade and fetch types?
 	@JsonIgnore
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Patient() {

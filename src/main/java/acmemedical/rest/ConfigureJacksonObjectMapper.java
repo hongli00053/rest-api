@@ -38,17 +38,13 @@ public class ConfigureJacksonObjectMapper implements ContextResolver<ObjectMappe
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             // Lenient parsing of JSON - if a field has a typo, don't fall to pieces
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        /* 
-        HttpErrorAsJSONServlet.setObjectMapper(mapper);
-        TypeResolverBuilder<?> typer = new StdTypeResolverBuilder()
-                .init(JsonTypeInfo.Id.NAME, null)
-                .inclusion(JsonTypeInfo.As.PROPERTY)
-                .typeProperty("entity-type");
-        mapper.setDefaultTyping(typer);
-        mapper.registerSubtypes(new NamedType(PublicMedicalSchool.class, "public_medical_school"));
-        mapper.registerSubtypes(new NamedType(PrivateMedicalSchool.class, "private_medical_school"));
-        */
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            // Handle circular references
+            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            // Handle polymorphic types more carefully
+            .configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+        
         return mapper;
     }
 }

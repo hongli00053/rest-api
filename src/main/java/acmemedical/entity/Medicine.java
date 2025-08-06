@@ -2,7 +2,7 @@
  * File:  Medicine.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Mohammad Abdelqadiredris, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
@@ -30,6 +32,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "medicine")
 @NamedQuery(name = "Medicine.findAll", query = "SELECT m FROM Medicine m")
+@NamedQuery(name = "Medicine.findById", query = "SELECT m FROM Medicine m WHERE m.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "medicine_id"))
 public class Medicine extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -53,6 +56,7 @@ public class Medicine extends PojoBase implements Serializable {
 	private String genericName;
 
 	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "medicine")
+	@JsonIgnore
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Medicine() {

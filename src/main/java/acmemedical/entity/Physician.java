@@ -2,7 +2,7 @@
  * File:  Physician.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Manaf Akil, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.NamedQuery;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Basic;

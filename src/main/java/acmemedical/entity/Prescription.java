@@ -2,7 +2,7 @@
  * File:  Prescription.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Mohammad Abdelqadiredris, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -33,6 +33,7 @@ import jakarta.persistence.Table;
 @Table(name = "prescription")
 @Access(AccessType.FIELD)
 @NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p")
+@NamedQuery(name = "Prescription.findById", query = "SELECT p FROM Prescription p WHERE p.id.physicianId = :physicianId AND p.id.patientId = :patientId")
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -41,18 +42,16 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 
 	@MapsId("physicianId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "physician_id", nullable = false)
 	private Physician physician;
 
-	// TODO PR01 - Add missing annotations.
 	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
-	// TODO PR02 - Add missing annotations.
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "medicine_id", referencedColumnName = "id")
+	@JoinColumn(name = "medicine_id", nullable = false)
 	private Medicine medicine;
 
 	@Column(name = "number_of_refills")
@@ -76,8 +75,6 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	}
 	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "physician_id")
 	public Physician getPhysician() {
 		return physician;
 	}
@@ -88,8 +85,6 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	}
 	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "patient_id")
 	public Patient getPatient() {
 		return patient;
 	}

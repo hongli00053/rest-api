@@ -58,17 +58,20 @@ public class MedicalSchoolResource {
     }
     
     @GET
-    // TODO MSR01 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path("/{medicalSchoolId}")
     public Response getMedicalSchoolById(@PathParam("medicalSchoolId") int medicalSchoolId) {
         LOG.debug("Retrieving medical school with id = {}", medicalSchoolId);
         MedicalSchool medicalSchool = service.getMedicalSchoolById(medicalSchoolId);
+        if (medicalSchool == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
         Response response = Response.ok(medicalSchool).build();
         return response;
     }
 
     @DELETE
-    // TODO MSR02 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE})
     @Path("/{medicalSchoolId}")
     public Response deleteMedicalSchool(@PathParam("medicalSchoolId") int msId) {
         LOG.debug("Deleting medical school with id = {}", msId);
@@ -99,11 +102,14 @@ public class MedicalSchoolResource {
         LOG.debug("Adding a new MedicalTraining to medical school with id = {}", msId);
         
         MedicalSchool ms = service.getMedicalSchoolById(msId);
+        if (ms == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
         newMedicalTraining.setMedicalSchool(ms);
         ms.getMedicalTrainings().add(newMedicalTraining);
         service.updateMedicalSchool(msId, ms);
         
-        return Response.ok(sc).build();
+        return Response.ok(newMedicalTraining).build();
     }
 
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})

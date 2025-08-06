@@ -20,8 +20,10 @@ import java.util.List;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -56,7 +58,7 @@ public class PhysicianResource {
     protected SecurityContext sc;
 
     @GET
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can get the list of all physicians.
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can get the list of all physicians.
     @RolesAllowed({ADMIN_ROLE})
     public Response getPhysicians() {
         LOG.debug("retrieving all physicians ...");
@@ -66,35 +68,46 @@ public class PhysicianResource {
     }
 
     @GET
-    //A user with either the role ‘ADMIN_ROLE’ or ‘USER_ROLE’ can get a specific physician.
-    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
-    @Path(RESOURCE_PATH_ID_PATH)
-    public Response getPhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
-        LOG.debug("try to retrieve specific physician " + id);
-        Response response = null;
-        Physician physician = null;
+ // A user with either the role 'ADMIN_ROLE' or 'USER_ROLE' can get a specific physician.
+ @RolesAllowed({ADMIN_ROLE, USER_ROLE})
+ @Path(RESOURCE_PATH_ID_PATH)
+ public Response getPhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+     LOG.debug("try to retrieve specific physician " + id);
+     Response response = null;
+     Physician physician = null;
 
-        if (sc.isCallerInRole(ADMIN_ROLE)) {
-        	physician = service.getPhysicianById(id);
-            response = Response.status(physician == null ? Status.NOT_FOUND : Status.OK).entity(physician).build();
-        } else if (sc.isCallerInRole(USER_ROLE)) {
-            WrappingCallerPrincipal wCallerPrincipal = (WrappingCallerPrincipal) sc.getCallerPrincipal();
-            SecurityUser sUser = (SecurityUser) wCallerPrincipal.getWrapped();
-            physician = sUser.getPhysician();
-            if (physician != null && physician.getId() == id) {
-                response = Response.status(Status.OK).entity(physician).build();
-            } else {
-            	//disallows a ‘USER_ROLE’ user from getting a physician that is not linked to the SecurityUser.
-                throw new ForbiddenException("User trying to access resource it does not own (wrong userid)");
-            }
-        } else {
-            response = Response.status(Status.BAD_REQUEST).build();
-        }
-        return response;
-    }
+     if (sc.isCallerInRole(ADMIN_ROLE)) {
+         physician = service.getPhysicianById(id);
+         response = Response.status(physician == null ? Status.NOT_FOUND : Status.OK).entity(physician).build();
+     } else if (sc.isCallerInRole(USER_ROLE)) {
+         try {
+             // Attempt to retrieve authenticated user's SecurityUser via caller name
+             String username = sc.getCallerPrincipal().getName();
+             TypedQuery<SecurityUser> query = service.getEntityManager()
+                 .createNamedQuery("SecurityUser.findWithRolesAndPhysician", SecurityUser.class);
+             query.setParameter("username", username);
+             SecurityUser sUser = query.getSingleResult();
+
+             physician = sUser.getPhysician();
+             if (physician != null && physician.getId() == id) {
+                 response = Response.status(Status.OK).entity(physician).build();
+             } else {
+                 // disallows a 'USER_ROLE' user from getting a physician that is not linked to the SecurityUser.
+                 throw new ForbiddenException("User trying to access resource it does not own (wrong userid)");
+             }
+         } catch (Exception e) {
+             // If user not found or any error, deny access
+             throw new ForbiddenException("User authentication failed");
+         }
+     } else {
+         response = Response.status(Status.BAD_REQUEST).build();
+     }
+     return response;
+ }
+
 
     @POST
-    //Only a user with the SecurityRole ‘ADMIN_ROLE’ can add a new physician.
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can add a new physician.
     @RolesAllowed({ADMIN_ROLE})
     public Response addPhysician(Physician newPhysician) {
         Response response = null;
@@ -106,13 +119,30 @@ public class PhysicianResource {
     }
 
     @PUT
-    //Only an ‘ADMIN_ROLE’ user can associate a Medicine and/or Patient to a Physician.
+    //Only an 'ADMIN_ROLE' user can associate a Medicine and/or Patient to a Physician.
     @RolesAllowed({ADMIN_ROLE})
     @Path(PHYSICIAN_PATIENT_MEDICINE_RESOURCE_PATH)
     public Response updateMedicineForPhysicianPatient(@PathParam("physicianId") int physicianId, @PathParam("patientId") int patientId, Medicine newMedicine) {
         Response response = null;
         Medicine medicine = service.setMedicineForPhysicianPatient(physicianId, patientId, newMedicine);
         response = Response.ok(medicine).build();
+        return response;
+    }
+
+    @DELETE
+    //Only a user with the SecurityRole 'ADMIN_ROLE' can delete a physician.
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response deletePhysician(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        LOG.debug("deleting physician with id = {}", id);
+        Response response = null;
+        Physician physicianToDelete = service.getPhysicianById(id);
+        if (physicianToDelete == null) {
+            response = Response.status(Status.NOT_FOUND).build();
+        } else {
+            service.deletePhysicianById(id);
+            response = Response.ok().build();
+        }
         return response;
     }
     

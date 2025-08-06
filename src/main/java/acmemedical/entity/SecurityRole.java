@@ -3,7 +3,7 @@
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
- * @author Chengcheng Xiong, Group 8
+ * @author Hongli Ren, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -24,12 +24,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 /**
  * Role class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 // TODO SR01 - Make this into JPA entity and add all necessary annotations inside the class.
+@NamedQuery(
+	    name = "SecurityRole.findByName",
+	    query = "SELECT r FROM SecurityRole r WHERE r.roleName = :name"
+	)
 @Entity
 @Table(name = "security_role")
 public class SecurityRole implements Serializable {

@@ -2,7 +2,7 @@
  * File:  MedicalTraining.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Manaf Akil, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,19 +32,21 @@ import jakarta.persistence.NamedQuery;
 //TODO MT01 - Add the missing annotations.
 @Entity
 @Table(name = "medical_training")
+@AttributeOverride(name = "id", column = @Column(name = "training_id"))
 //TODO MT02 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-@NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :id")
+@NamedQuery(name = "MedicalTraining.findAll", query = "SELECT t FROM MedicalTraining t")
+@NamedQuery(name = "MedicalTraining.findById", query = "SELECT t FROM MedicalTraining t WHERE t.id = :param1")
 public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// TODO MT03 - Add annotations for M:1. What should be the cascade and fetch types?
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "school_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "school_id", nullable = false)
 	private MedicalSchool school;
 
 	// TODO MT04 - Add annotations for 1:1. What should be the cascade and fetch types?
 	@JsonIgnore
-	@OneToOne(mappedBy = "medicalTraining", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "medicalTraining", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private MedicalCertificate certificate;
 
 	@Embedded
@@ -52,10 +55,7 @@ public class MedicalTraining extends PojoBase implements Serializable {
 	public MedicalTraining() {
 		durationAndStatus = new DurationAndStatus();
 	}
-	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "school_id")
 	public MedicalSchool getMedicalSchool() {
 		return school;
 	}

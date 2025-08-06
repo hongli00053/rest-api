@@ -2,7 +2,7 @@
  * File:  MedicalSchool.java Course Materials CST 8277
  *
  * @author Teddy Yap
- * @author Chengcheng Xiong, Group 8
+ * @author Hongli Ren, Group 8
  * @date modified 2025-07-14
  */
 package acmemedical.entity;
@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.NamedQuery;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -22,10 +23,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -35,24 +38,27 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //TODO MS01 - Add the missing annotations.
 @Entity
 @Table(name = "medical_school")
-//TODO MS02 - MedicalSchool has subclasses PublicSchool and PrivateSchool. Look at Week 9 slides for InheritanceType.
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "school_type", discriminatorType = DiscriminatorType.STRING)
-//TODO MS03 - Do we need a mapped super class? If so, which one? Already extends PojoBase
-
-//TODO MS04 - Add in JSON annotations to indicate different sub-classes of MedicalSchool
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "entity-type")
+@DiscriminatorColumn(name = "public", discriminatorType = DiscriminatorType.INTEGER)
+@AttributeOverride(name = "id", column = @Column(name = "school_id"))
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type",
+    defaultImpl = PublicSchool.class
+)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PublicSchool.class, name = "public_school"),
     @JsonSubTypes.Type(value = PrivateSchool.class, name = "private_school")
 })
 @NamedQuery(name = "MedicalSchool.findAll", query = "SELECT s FROM MedicalSchool s")
-@NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :name")
-@NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :id")
+@NamedQuery(name = "MedicalSchool.isDuplicate", query = "SELECT COUNT(s) FROM MedicalSchool s WHERE s.name = :param1")
+@NamedQuery(name = "MedicalSchool.findById", query = "SELECT s FROM MedicalSchool s WHERE s.id = :param1")
 @NamedQuery(
-	    name = "MedicalSchool.findWithTrainings",
-	    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :id"
-	)
+    name = "MedicalSchool.findWithTrainings",
+    query = "SELECT s FROM MedicalSchool s LEFT JOIN FETCH s.medicalTrainings WHERE s.id = :param1"
+)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class MedicalSchool extends PojoBase implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -61,11 +67,12 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     private String name;
 
     // TODO MS06 - Add the 1:M annotation. What should be the cascade and fetch types?
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
     // TODO MS07 - Add missing annotation.
-    @Column(name = "public")
+    @Column(name = "public", nullable = false, insertable = false, updatable = false)
     private boolean isPublic;
 
     // NamedQuery constants for JPA queries
@@ -84,8 +91,6 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
     }
 
     // TODO MS08 - Is an annotation needed here? No, standard getter is sufficient
-    @JsonIgnore
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public Set<MedicalTraining> getMedicalTrainings() {
         return medicalTrainings;
     }
