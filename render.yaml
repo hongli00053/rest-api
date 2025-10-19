@@ -1,0 +1,37 @@
+services:
+  # Web Service - Java Application
+  - type: web
+    name: acmemedical-api
+    env: java
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: chmod +x start.sh && ./start.sh
+    envVars:
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xmx512m"
+      - key: DB_HOST
+        fromDatabase:
+          name: acmemedical-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: acmemedical-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: acmemedical-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: acmemedical-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: acmemedical-db
+          property: password
+
+databases:
+  # MySQL Database
+  - name: acmemedical-db
+    databaseName: acmemedical
+    user: cst8277
+

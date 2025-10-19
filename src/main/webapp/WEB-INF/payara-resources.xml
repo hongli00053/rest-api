@@ -4,11 +4,11 @@
 	<jdbc-connection-pool
 		datasource-classname="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource"
 		name="acmemedicalDB" res-type="javax.sql.DataSource">
-		<property name="databaseName" value="acmemedical"></property>
-		<property name="serverName" value="localhost"></property>
-		<property name="user" value="cst8277"></property>
-		<property name="password" value="8277"></property>
-		<property name="portNumber" value="3306"></property>
+		<property name="databaseName" value="${db.name=acmemedical}"></property>
+		<property name="serverName" value="${db.host=localhost}"></property>
+		<property name="user" value="${db.user=cst8277}"></property>
+		<property name="password" value="${db.password=8277}"></property>
+		<property name="portNumber" value="${db.port=3306}"></property>
 		<property name="useSSL" value="false"></property>
 		<property name="allowPublicKeyRetrieval" value="true"></property>
 		<property name="createDatabaseIfNotExist" value="true"></property>
