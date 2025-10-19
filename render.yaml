@@ -2,9 +2,9 @@ services:
   # Web Service - Java Application
   - type: web
     name: acmemedical-api
-    runtime: java
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: chmod +x start.sh && ./start.sh
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: JAVA_TOOL_OPTIONS
         value: "-Xmx512m"
@@ -34,4 +34,3 @@ databases:
   - name: acmemedical-db
     databaseName: acmemedical
     user: cst8277
-
