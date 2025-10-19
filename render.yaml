@@ -2,7 +2,7 @@ services:
   # Web Service - Java Application
   - type: web
     name: acmemedical-api
-    env: java
+    runtime: java
     buildCommand: chmod +x build.sh && ./build.sh
     startCommand: chmod +x start.sh && ./start.sh
     envVars:
